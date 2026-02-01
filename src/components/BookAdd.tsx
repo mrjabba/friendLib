@@ -1,12 +1,18 @@
-export default function BookAdd({onSave, selectedBook}) {
+import { useRef } from 'react';
+import {Book} from './models';
+
+export default function BookAdd({onSave, selectedBook}: {onSave: Function, selectedBook: Book | undefined}) {
    console.log(`>> BookAdd start`);
+   const titleRef = useRef<HTMLInputElement>(null);
+   const authorRef = useRef<HTMLInputElement>(null);
+   const pagesRef = useRef<HTMLInputElement>(null);
 
    function handleSave() {
     const state = {
-        title: document.getElementById('title').value,
-        author: document.getElementById('author').value,
-        pages: document.getElementById('pages').value
-    };
+        title: titleRef.current?.value || '',
+        author: authorRef.current?.value || '',
+        pages: pagesRef.current?.value || ''
+      };
     onSave(state);
    }
 
@@ -20,6 +26,7 @@ export default function BookAdd({onSave, selectedBook}) {
   <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
     <label htmlFor="title" className="md:w-40 font-medium">Title</label>
     <input
+      ref={titleRef}
       type="text"
       id="title"
       name="title"
@@ -31,6 +38,7 @@ export default function BookAdd({onSave, selectedBook}) {
   <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
     <label htmlFor="author" className="md:w-40 font-medium">Author</label>
     <input
+      ref={authorRef}
       type="text"
       id="author"
       name="author"
@@ -42,6 +50,7 @@ export default function BookAdd({onSave, selectedBook}) {
   <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
     <label htmlFor="pages" className="md:w-40 font-medium">Pages</label>
     <input
+      ref={pagesRef}
       type="text"
       id="pages"
       name="pages"

@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import logo from '../assets/logo-small.png';
-//import { DUMMY_BOOKS } from '../dummy-books';
-import BookDetail from './BookDetail';
+import {Book} from './models';
 
 
 export default function BookList() {
 
-const [selectedBook, setSelectedBook] = useState();
-const [books, setBooks] = useState([]);
+// const [selectedBook, setSelectedBook] = useState();
+// const [books, setBooks] = useState([]);
+const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined);
+const [books, setBooks] = useState<Book[]>([]);
 console.log(`>> BookList start`);
 let bookContent = <p>Please select a book.</p>;
 
@@ -17,6 +18,7 @@ useEffect(() => {
         const resData = await response.json();
         setBooks(resData.books);
     }
+    // TODO error handler if we fail to fetch books
     fetchBooks();
 }, []);
 
@@ -32,15 +34,15 @@ useEffect(() => {
     );
   }
 
-function handleMouseOver(book) {
+function handleMouseOver(book: Book) {
     // TODO reset the selected book state when the page initially loads?
     //console.log(`>> handleMouseOver`, book);
     setSelectedBook(book);
 }
 
-function handleMouseOut(book) {
+function handleMouseOut(book: Book | undefined) {
     //console.log(`>> handleMouseOut`, book);
-    setSelectedBook('');
+    setSelectedBook(undefined);
 }
 
 return (

@@ -1,4 +1,10 @@
-export default function MenuSidebar({ onSelectAdd, onSelectHome }) {
+
+interface MenuSidebarProps {
+  onSelectAdd: () => void;
+  onSelectHome: () => void;
+}
+
+export default function MenuSidebar({ onSelectAdd, onSelectHome }: MenuSidebarProps) {
   //console.log(`>> MenuSidebar start`);
   // function handleOnClick() {
   //   console.log(`add button clicked`);

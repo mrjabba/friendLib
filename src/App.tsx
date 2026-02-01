@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import MenuSidebar from "./components/MenuSidebar";
 import BookList from "./components/BookList";
 import BookAdd from "./components/BookAdd";
+import { Book } from "./components/models";
 
 function App() {
   //console.log(`>> App start`);
@@ -10,7 +11,7 @@ function App() {
     items: [],
   });
   const [editing, setEditing] = useState(false);
-  const [selectedBook, setSelectedBook] = useState(0);
+  const [selectedBook, setSelectedBook] = useState(undefined);
 
   function handleAddBookClick() {
     // TODO we aren't see this function being invoked
@@ -23,7 +24,7 @@ function App() {
     setEditing(false);
   }
 
-  function handleOnSave(book) {
+  function handleOnSave(book: Book) {
     console.log(`>> handleOnSave`, book);
     setBooks((prev) => {
       return {
