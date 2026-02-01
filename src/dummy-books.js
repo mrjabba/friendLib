@@ -1,0 +1,80 @@
+
+export const DUMMY_BOOKS = [
+  {
+    title: 'Of Mice and Men',
+    author: 'John Steinbeck',
+    pages: 107,
+    genres: ['fiction', 'tragedy'],
+    isbn13: 9780140177398
+  },
+  {
+    title: 'Dune',
+    author: 'Frank Herbert',
+    pages: 688,
+    genres: ['science fiction', 'adventure'],
+    isbn13: 9780441172719
+  },
+  {
+    title: 'The Great Gatsby',
+    author: 'F. Scott Fitzgerald',
+    pages: 180,
+    genres: ['fiction', 'classic', 'romance'],
+    isbn13: 9780743273565
+  },
+  {
+    title: 'Sapiens',
+    author: 'Yuval Noah Harari',
+    pages: 443,
+    genres: ['non-fiction', 'history', 'science'],
+    isbn13: 9780062316097
+  },
+  {
+    title: 'Foundation',
+    author: 'Isaac Asimov',
+    pages: 255,
+    genres: ['science fiction', 'classic'],
+    isbn13: 9780553293357
+  },
+  {
+    title: 'Educated',
+    author: 'Tara Westover',
+    pages: 334,
+    genres: ['non-fiction', 'memoir', 'biography'],
+    isbn13: 9780399590504
+  },
+  {
+    title: '1984',
+    author: 'George Orwell',
+    pages: 328,
+    genres: ['fiction', 'science fiction', 'dystopian'],
+    isbn13: 9780451524935
+  },
+  {
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    pages: 320,
+    genres: ['non-fiction', 'self-help', 'business'],
+    isbn13: 9780735211292
+  },
+  {
+    title: 'The Left Hand of Darkness',
+    author: 'Ursula K. Le Guin',
+    pages: 304,
+    genres: ['science fiction', 'classic', 'adventure'],
+    isbn13: 9780441478125
+  },
+  {
+    title: 'Thinking, Fast and Slow',
+    author: 'Daniel Kahneman',
+    pages: 499,
+    genres: ['non-fiction', 'psychology', 'science'],
+    isbn13: 9780374275631
+  },
+  {
+    title: 'To Kill a Mockingbird',
+    author: 'Harper Lee',
+    pages: 281,
+    genres: ['fiction', 'classic', 'drama'],
+    isbn13: 9780061120084
+  },
+];
