@@ -51,7 +51,7 @@ export default function BookAdd({onSave, selectedBook}: {onSave: Function, selec
     <label htmlFor="pages" className="md:w-40 font-medium">Pages</label>
     <input
       ref={pagesRef}
-      type="text"
+      type="number"
       id="pages"
       name="pages"
       required
