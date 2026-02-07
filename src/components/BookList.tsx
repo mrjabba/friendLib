@@ -1,38 +1,26 @@
 import { useState, useEffect } from 'react';
-import logo from '../assets/logo-small.png';
+// import logo from '../assets/logo-small.png';
 import {Book} from './models';
+import BookDetail from './BookDetail';
 
 
-export default function BookList() {
+export default function BookList({ books }: { books: Book[] }) {
 
-// const [selectedBook, setSelectedBook] = useState();
-// const [books, setBooks] = useState([]);
 const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined);
-const [books, setBooks] = useState<Book[]>([]);
-console.log(`>> BookList start`);
+//const [books, setBooks] = useState<Book[]>([]);
+console.log(`>> BookList start books`, books);
 let bookContent = <p>Please select a book.</p>;
 
-useEffect(() => {
-    async function fetchBooks() {
-        const response = await fetch('http://localhost:3000/books');
-        const resData = await response.json();
-        setBooks(resData.books);
-    }
-    // TODO error handler if we fail to fetch books
-    fetchBooks();
-}, []);
-
-  if (selectedBook) {
-    bookContent = (
-      <div id="tab-content">
-        <h3>{selectedBook.title}</h3>
-        <p>{selectedBook.author}</p>
-        <pre>
-          <code>{selectedBook.pages}</code>
-        </pre>
-      </div>
-    );
-  }
+// useEffect(() => {
+//     async function fetchBooks() {
+//         console.log(`>> fetchBooks`);
+//         const response = await fetch('http://localhost:3000/books');
+//         const resData = await response.json();
+//         setBooks(resData.books);
+//     }
+//     // TODO error handler if we fail to fetch books
+//     fetchBooks();
+// }, []);
 
 function handleMouseOver(book: Book) {
     // TODO reset the selected book state when the page initially loads?
@@ -66,8 +54,10 @@ return (
         
         {/* Image on right */}
         <div className="flex-shrink-0">
-          <img src={logo} className="h-64 w-auto object-contain" />
-          {bookContent}
+          {/* <img src={logo} className="h-64 w-auto object-contain" /> */}
+          {
+            selectedBook && <BookDetail book={selectedBook} />
+          }
         </div>
       </div>
     );

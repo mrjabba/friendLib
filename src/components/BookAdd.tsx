@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import {Book} from './models';
 
-export default function BookAdd({onSave, selectedBook}: {onSave: Function, selectedBook: Book | undefined}) {
+// export default function BookAdd({onSave, selectedBook}: {onSave: Function, selectedBook: Book | undefined}) {
+export default function BookAdd() {
    console.log(`>> BookAdd start`);
    const titleRef = useRef<HTMLInputElement>(null);
    const authorRef = useRef<HTMLInputElement>(null);
@@ -13,8 +14,36 @@ export default function BookAdd({onSave, selectedBook}: {onSave: Function, selec
         author: authorRef.current?.value || '',
         pages: pagesRef.current?.value || ''
       };
-    onSave(state);
+    //onSave(state);
    }
+   /*
+   use form tag, on onSubmit={myFunc}
+   will give us the event object for the whole form
+   then event.preventDefault()
+   othewise form will try to submit to the server
+   (check network. make sure it's not reloading everything when you save!!)
+   OR in react v19+ use formAction
+
+   but we have formData
+
+   // native browser stuff
+   const fd = new FormData(event.target); 
+   // also all inputs much have name="foo" property!!
+   so u can do
+   //const fooValue = fd.get('foo)
+   OR
+   const checkboxValues = fd.getAll('checkboxfield)
+   const object = Object.fromEntries(fd.entries())
+   data.checkboxValues = checkboxValues // or your
+   //now it's an object!
+   // beware multi value fields (checkboxes) b/c they have the same name
+
+
+
+
+
+
+   */
 
   return (
     <>

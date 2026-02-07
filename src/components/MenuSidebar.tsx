@@ -1,23 +1,17 @@
+import { Link } from 'react-router-dom';
 
-interface MenuSidebarProps {
-  onSelectAdd: () => void;
-  onSelectHome: () => void;
-}
-
-export default function MenuSidebar({ onSelectAdd, onSelectHome }: MenuSidebarProps) {
-  //console.log(`>> MenuSidebar start`);
-  // function handleOnClick() {
-  //   console.log(`add button clicked`);
-  // }
-
+export default function MenuSidebar() {
   return (
     <>
       <ul className="my-5 px-8 md:text-xl">
         <li>
-          <button className="py-2" onClick={onSelectHome}>Home</button>
+          <button className="py-2"><Link to="/">Home</Link></button>
         </li>
         <li>
-          <button className="py-2" onClick={onSelectAdd}>Add</button>
+          <button className="py-2"><Link to="/books/new">Add</Link></button>
+        </li>
+        <li>
+          <button className="py-2"><Link to="/books/search">Search</Link></button>
         </li>
       </ul>
     </>
