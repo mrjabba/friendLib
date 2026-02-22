@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://mrjabba.github.io/frendLib",
+  "homepage": "https://mrjabba.github.io/friendLib",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
