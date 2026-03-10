@@ -1,6 +1,6 @@
 import Header from './header';
 import MenuSidebar from './menu-sidebar';
-import TestClient from './test-client';
+import Image from 'next/image';
 
 /*
 TODO stop here mar 4
@@ -60,7 +60,9 @@ export default function Page() {
     <>
       <div className="h-screen flex flex-col">
         {/* Header spans full width */}
-        <Header />
+        <header className="bg-red-500">
+          <Header />
+        </header>
 
         {/* Below header: sidebar and content side by side */}
         <div className="flex flex-1">
@@ -71,9 +73,15 @@ export default function Page() {
 
           {/* Main content on right - fills remaining space */}
           <main className="flex-1 overflow-y-auto p-8">
-              formerlyOutlet. maybe children now?
-            <TestClient />
-            <div>kevin2222333</div>
+            {/* <img src={logo} className="h-64 w-auto object-contain" /> */}
+            <Image
+            src="/images/logo-small.png"
+            alt='logo-small'
+            width={640}
+            height={427}
+            />
+
+            <h2>Search, borrow and loan books with friends.</h2>
           </main>
         </div>
       </div>
