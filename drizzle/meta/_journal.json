@@ -8,6 +8,20 @@
       "when": 1772678027640,
       "tag": "0000_condemned_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773177290152,
+      "tag": "0001_slow_ogun",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773177297872,
+      "tag": "0002_dark_bedlam",
+      "breakpoints": true
     }
   ]
 }

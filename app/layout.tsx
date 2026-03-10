@@ -24,7 +24,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={GeistSans.variable}>{children}</body>
+      <body 
+      className={GeistSans.variable}>{children}</body>
     </html>
   );
 }

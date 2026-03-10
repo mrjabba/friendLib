@@ -9,7 +9,7 @@ export default function MenuSidebar() {
           <button className="py-2"><Link href="/">Home</Link></button>
         </li>
         <li>
-          <button className="py-2"><Link href="/books/new">Add</Link></button>
+          <button className="py-2"><Link href="/actions/books-add">Add</Link></button>
         </li>
         <li>
           <button className="py-2"><Link href="/books/search">Search</Link></button>
