@@ -66,6 +66,9 @@ export default function BookSearch() {
                   <p className="text-gray-600"><strong>Pages:</strong> {book.pages}</p>
                   <p className="text-gray-600"><strong>Genres:</strong> {book.genres}</p>
                   <p className="text-gray-600"><strong>ISBN:</strong> {book.isbn13}</p>
+                  <p className="mt-2">
+                    <Link href={`/actions/book-edit?id=${book.id}`} className="text-blue-600 hover:underline mr-4">Edit</Link>
+                  </p>
                 </li>
               ))}
             </ul>
