@@ -3,7 +3,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { books } from '@/db/schema';
-import { like, or } from 'drizzle-orm';
+import { ilike, or } from 'drizzle-orm';
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
 const db = drizzle(client);
@@ -18,8 +18,8 @@ export async function searchBooks(query: string) {
     .from(books)
     .where(
       or(
-        like(books.title, `%${query}%`),
-        like(books.author, `%${query}%`)
+        ilike(books.title, `%${query}%`),
+        ilike(books.author, `%${query}%`)
       )
     )
     .limit(20);
