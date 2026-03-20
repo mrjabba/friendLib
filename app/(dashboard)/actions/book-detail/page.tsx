@@ -30,6 +30,8 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
   
   const book = result[0];
 
+  const buttonStyle = 'bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition';
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Book Details</h2>
@@ -63,10 +65,11 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
         </div>
       </div>
       
-      <div className="mt-6">
-        <Link href="/actions/book-add" className="bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition">
+      <div className="mt-6 flex gap-4">
+        <Link href="/actions/book-add" className={buttonStyle}>
           Add Another Book
         </Link>
+        <Link href={`/actions/book-edit?id=${book.id}`} className={buttonStyle}>Edit</Link>
       </div>
     </div>
   );
