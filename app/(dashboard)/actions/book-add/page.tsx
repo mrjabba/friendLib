@@ -1,103 +1,89 @@
 'use client';
-//import BookAdd from '../books-add';
-import { useRef } from 'react';
+import { addBook } from './actions';
+import { useFormStatus } from 'react-dom';
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition disabled:opacity-50"
+    >
+      {pending ? 'Saving...' : 'Save'}
+    </button>
+  );
+}
 
 export default function BookAddPage() {
-  //return <BookAdd />;
-     console.log(`>> BookAdd start`);
-     const titleRef = useRef<HTMLInputElement>(null);
-     const authorRef = useRef<HTMLInputElement>(null);
-     const pagesRef = useRef<HTMLInputElement>(null);
-  
-     function handleSave() {
-      const state = {
-          title: titleRef.current?.value || '',
-          author: authorRef.current?.value || '',
-          pages: pagesRef.current?.value || ''
-        };
-      //onSave(state);
-     }
-     /*
-     use form tag, on onSubmit={myFunc}
-     will give us the event object for the whole form
-     then event.preventDefault()
-     othewise form will try to submit to the server
-     (check network. make sure it's not reloading everything when you save!!)
-     OR in react v19+ use formAction
-  
-     but we have formData
-  
-     // native browser stuff
-     const fd = new FormData(event.target); 
-     // also all inputs much have name="foo" property!!
-     so u can do
-     //const fooValue = fd.get('foo)
-     OR
-     const checkboxValues = fd.getAll('checkboxfield)
-     const object = Object.fromEntries(fd.entries())
-     data.checkboxValues = checkboxValues // or your
-     //now it's an object!
-     // beware multi value fields (checkboxes) b/c they have the same name
-  
-  
-  
-  
-  
-  
-     */
-  
-    return (
-      <>
-  <h2 className="text-xl font-semibold mb-4">Book Information</h2>
-  
-  <fieldset className="border border-gray-300 rounded-md p-4 mb-6">
-    <legend className="font-medium px-1"> Details</legend>
-  
-    <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
-      <label htmlFor="title" className="md:w-40 font-medium">Title</label>
-      <input
-        ref={titleRef}
-        type="text"
-        id="title"
-        name="title"
-        required
-        className="border border-gray-300 rounded px-3 py-2 flex-1"
-      />
-    </div>
-  
-    <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
-      <label htmlFor="author" className="md:w-40 font-medium">Author</label>
-      <input
-        ref={authorRef}
-        type="text"
-        id="author"
-        name="author"
-        required
-        className="border border-gray-300 rounded px-3 py-2 flex-1"
-      />
-    </div>
-  
-    <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
-      <label htmlFor="pages" className="md:w-40 font-medium">Pages</label>
-      <input
-        ref={pagesRef}
-        type="number"
-        id="pages"
-        name="pages"
-        required
-        className="border border-gray-300 rounded px-3 py-2 flex-1"
-      />
-    </div>
-  </fieldset>
-  
-  <button
-    type="submit"
-    onClick={() => handleSave()}
-    className="bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition"
-  >
-    Save
-  </button>
-      </>
-    );
-  
+  return (
+    <>
+      <h2 className="text-xl font-semibold mb-4">Add Book</h2>
+      
+      <form action={addBook} className="max-w-lg">
+        <fieldset className="border border-gray-300 rounded-md p-4 mb-6">
+          <legend className="font-medium px-1">Book Details</legend>
+        
+          <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
+            <label htmlFor="title" className="md:w-40 font-medium">Title</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              required
+              className="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+          </div>
+        
+          <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
+            <label htmlFor="author" className="md:w-40 font-medium">Author</label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              required
+              className="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+          </div>
+        
+          <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
+            <label htmlFor="pages" className="md:w-40 font-medium">Pages</label>
+            <input
+              type="number"
+              id="pages"
+              name="pages"
+              required
+              min="1"
+              className="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+          </div>
+        
+          <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
+            <label htmlFor="genres" className="md:w-40 font-medium">Genres</label>
+            <input
+              type="text"
+              id="genres"
+              name="genres"
+              placeholder="e.g., Fiction, Mystery, Sci-Fi"
+              className="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+          </div>
+        
+          <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
+            <label htmlFor="isbn13" className="md:w-40 font-medium">ISBN-13</label>
+            <input
+              type="text"
+              id="isbn13"
+              name="isbn13"
+              placeholder="e.g., 978-0-13-468599-1"
+              required
+              className="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+          </div>
+        </fieldset>
+      
+        <SubmitButton />
+      </form>
+    </>
+  );
 }
