@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { searchBooks } from "./actions";
+import Link from 'next/link';
 
 export default function BookSearch() {
   const [query, setQuery] = useState("");
@@ -58,7 +59,9 @@ export default function BookSearch() {
             <ul className="space-y-4">
               {books.map((book) => (
                 <li key={book.id} className="border border-gray-300 rounded-md p-4">
-                  <h4 className="font-semibold text-lg">{book.title}</h4>
+                  <h4 className="font-semibold text-lg">
+                    <Link href={`/actions/book-detail?id=${book.id}`} className="text-blue-600 hover:underline">{book.title}</Link>
+                  </h4>
                   <p className="text-gray-600"><strong>Author:</strong> {book.author}</p>
                   <p className="text-gray-600"><strong>Pages:</strong> {book.pages}</p>
                   <p className="text-gray-600"><strong>Genres:</strong> {book.genres}</p>
