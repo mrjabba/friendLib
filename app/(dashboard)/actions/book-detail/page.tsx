@@ -3,6 +3,7 @@ import postgres from 'postgres';
 import { books } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
+import Button from '@/components/Button';
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
 const db = drizzle(client);
@@ -29,8 +30,6 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
   }
   
   const book = result[0];
-
-  const buttonStyle = 'bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition';
 
   return (
     <div>
@@ -66,10 +65,12 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
       </div>
       
       <div className="mt-6 flex gap-4">
-        <Link href="/actions/book-add" className={buttonStyle}>
-          Add Another Book
+        <Link href="/actions/book-add">
+          <Button>Add Another Book</Button>
         </Link>
-        <Link href={`/actions/book-edit?id=${book.id}`} className={buttonStyle}>Edit</Link>
+        <Link href={`/actions/book-edit?id=${book.id}`}>
+          <Button>Edit</Button>
+        </Link>
       </div>
     </div>
   );

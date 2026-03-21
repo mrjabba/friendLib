@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { searchBooks } from "./actions";
 import Link from 'next/link';
+import Button from "@/components/Button";
 
 export default function BookSearch() {
   const [query, setQuery] = useState("");
@@ -41,13 +42,9 @@ export default function BookSearch() {
           </div>
         </fieldset>
 
-        <button
-          type="submit"
-          disabled={isPending}
-          className="bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition disabled:opacity-50"
-        >
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Searching..." : "Search"}
-        </button>
+        </Button>
       </form>
 
       {searched && (
