@@ -1,23 +1,24 @@
-'use client';
+'use client'
 
-import { useState, useTransition } from "react";
-import { searchBooks } from "./actions";
-import Link from 'next/link';
-import Button from "@/components/Button";
+import { useState, useTransition } from 'react'
+import { searchBooks } from './actions'
+import Link from 'next/link'
+import Button from '@/components/Button'
+import DeleteButton from '@/components/DeleteButton'
 
 export default function BookSearch() {
-  const [query, setQuery] = useState("");
-  const [books, setBooks] = useState<any[]>([]);
-  const [searched, setSearched] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [query, setQuery] = useState('')
+  const [books, setBooks] = useState<any[]>([])
+  const [searched, setSearched] = useState(false)
+  const [isPending, startTransition] = useTransition()
 
   function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
     startTransition(async () => {
-      const results = await searchBooks(query);
-      setBooks(results);
-      setSearched(true);
-    });
+      const results = await searchBooks(query)
+      setBooks(results)
+      setSearched(true)
+    })
   }
 
   return (
@@ -29,7 +30,9 @@ export default function BookSearch() {
           <legend className="font-medium px-1">Details</legend>
 
           <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
-            <label htmlFor="search" className="md:w-40 font-medium">Search</label>
+            <label htmlFor="search" className="md:w-40 font-medium">
+              Search
+            </label>
             <input
               type="text"
               id="search"
@@ -43,7 +46,7 @@ export default function BookSearch() {
         </fieldset>
 
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Searching..." : "Search"}
+          {isPending ? 'Searching...' : 'Search'}
         </Button>
       </form>
 
@@ -57,15 +60,34 @@ export default function BookSearch() {
               {books.map((book) => (
                 <li key={book.id} className="border border-gray-300 rounded-md p-4">
                   <h4 className="font-semibold text-lg">
-                    <Link href={`/actions/book-detail?id=${book.id}`} className="text-blue-600 hover:underline">{book.title}</Link>
+                    <Link
+                      href={`/actions/book-detail?id=${book.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {book.title}
+                    </Link>
                   </h4>
-                  <p className="text-gray-600"><strong>Author:</strong> {book.author}</p>
-                  <p className="text-gray-600"><strong>Pages:</strong> {book.pages}</p>
-                  <p className="text-gray-600"><strong>Genres:</strong> {book.genres}</p>
-                  <p className="text-gray-600"><strong>ISBN:</strong> {book.isbn13}</p>
-                  <p className="mt-2">
-                    <Link href={`/actions/book-edit?id=${book.id}`} className="text-blue-600 hover:underline mr-4">Edit</Link>
+                  <p className="text-gray-600">
+                    <strong>Author:</strong> {book.author}
                   </p>
+                  <p className="text-gray-600">
+                    <strong>Pages:</strong> {book.pages}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Genres:</strong> {book.genres}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>ISBN:</strong> {book.isbn13}
+                  </p>
+                  <div className="mt-2">
+                    <Link
+                      href={`/actions/book-edit?id=${book.id}`}
+                      className="text-blue-600 hover:underline mr-4"
+                    >
+                      Edit
+                    </Link>
+                    <DeleteButton id={book.id} variant="primary" />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -73,5 +95,5 @@ export default function BookSearch() {
         </div>
       )}
     </>
-  );
+  )
 }

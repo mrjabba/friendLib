@@ -3,6 +3,7 @@
 import { updateBook } from './actions'
 import { SubmitButton } from './SubmitButton'
 import Button from '@/components/Button'
+import DeleteButton from '@/components/DeleteButton'
 import Link from 'next/link'
 import GenreAutocomplete from '@/components/GenreAutocomplete'
 import { useState } from 'react'
@@ -109,6 +110,7 @@ export default function BookEditForm({ book, genres }: BookEditFormProps) {
         <Link href="/">
           <Button>Cancel</Button>
         </Link>
+        <DeleteButton id={book.id} />
       </div>
     </form>
   )

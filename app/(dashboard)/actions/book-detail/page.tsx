@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Button from '@/components/Button'
 import Image from 'next/image'
 import GenrePill from '@/components/GenrePill'
+import DeleteButton from '@/components/DeleteButton'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
@@ -85,6 +86,7 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
           <Link href={`/actions/book-edit?id=${book.id}`}>
             <Button>Edit</Button>
           </Link>
+          <DeleteButton id={book.id} />
         </div>
       </div>
     </div>

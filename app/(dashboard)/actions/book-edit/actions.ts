@@ -9,6 +9,12 @@ import { redirect } from 'next/navigation'
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
 
+export async function deleteBook(id: number) {
+  await db.delete(bookGenre).where(eq(bookGenre.bookId, id))
+  await db.delete(books).where(eq(books.id, id))
+  redirect('/')
+}
+
 export async function getBookById(id: number) {
   const result = await db.select().from(books).where(eq(books.id, id)).limit(1)
   return result[0] || null
