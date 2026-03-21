@@ -4,6 +4,7 @@ import { books } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
 import Button from '@/components/Button';
+import Image from 'next/image';
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
 const db = drizzle(client);
@@ -31,46 +32,68 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
   
   const book = result[0];
 
+  const isbnFormatted = book.isbn13.toString().replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5');
+  const genres = book.genres ? book.genres.split(',').map(g => g.trim()) : [];
+
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Book Details</h2>
-      
-      <div className="bg-white shadow rounded-lg p-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <span className="font-medium text-gray-600">ID:</span>
-            <span className="ml-2">{book.id}</span>
-          </div>
-          <div>
-            <span className="font-medium text-gray-600">ISBN-13:</span>
-            <span className="ml-2">{book.isbn13.toString().replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')}</span>
-          </div>
-          <div className="col-span-2">
-            <span className="font-medium text-gray-600">Title:</span>
-            <span className="ml-2 text-lg">{book.title}</span>
-          </div>
-          <div className="col-span-2">
-            <span className="font-medium text-gray-600">Author:</span>
-            <span className="ml-2 text-lg">{book.author}</span>
-          </div>
-          <div>
-            <span className="font-medium text-gray-600">Pages:</span>
-            <span className="ml-2">{book.pages}</span>
-          </div>
-          <div className="col-span-2">
-            <span className="font-medium text-gray-600">Genres:</span>
-            <span className="ml-2">{book.genres || 'None specified'}</span>
-          </div>
+
+<div className="flex gap-4">
+        <Image
+          src="/images/book-empty-small.png"
+          alt='logo-small'
+          width={200}
+          height={200}
+        />
+        <div className="book-details">
+
         </div>
-      </div>
+
+        <div>
+              <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
+              <p className="text-gray-600 mb-6">{book.author}</p>
+
+              <div className="bg-white shadow rounded-lg p-6 mb-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500">ISBN:</span>
+                    <span className="text-sm">{isbnFormatted}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500">Pages:</span>
+                    <span className="text-sm">{book.pages}</span>
+                  </div>
+                </div>
+              </div>
+        </div>  
+</div>
+
       
-      <div className="mt-6 flex gap-4">
-        <Link href="/actions/book-add">
-          <Button>Add Another Book</Button>
-        </Link>
-        <Link href={`/actions/book-edit?id=${book.id}`}>
-          <Button>Edit</Button>
-        </Link>
+      <div>
+        {genres.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-3">Genres</h3>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre, index) => (
+                <span 
+                  key={index}
+                  className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm hover:bg-slate-200 transition cursor-default"
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <div className="flex gap-4">
+          <Link href="/actions/book-add">
+            <Button>Add Another Book</Button>
+          </Link>
+          <Link href={`/actions/book-edit?id=${book.id}`}>
+            <Button>Edit</Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
