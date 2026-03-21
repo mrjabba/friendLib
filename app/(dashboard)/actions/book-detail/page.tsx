@@ -1,10 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { books } from '@/db/schema'
+import { books, genre, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
 import Button from '@/components/Button'
 import Image from 'next/image'
+import GenrePill from '@/components/GenrePill'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
@@ -32,10 +33,15 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
 
   const book = result[0]
 
+  const genres = await db
+    .select({ id: genre.id, value: genre.value })
+    .from(bookGenre)
+    .innerJoin(genre, eq(bookGenre.genreId, genre.id))
+    .where(eq(bookGenre.bookId, id))
+
   const isbnFormatted = book.isbn13
     .toString()
     .replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')
-  const genres = book.genres ? book.genres.split(',').map((g) => g.trim()) : []
 
   return (
     <div>
@@ -66,13 +72,8 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">Genres</h3>
             <div className="flex flex-wrap gap-2">
-              {genres.map((genre, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm hover:bg-slate-200 transition cursor-default"
-                >
-                  {genre}
-                </span>
+              {genres.map((g: { id: number; value: string }) => (
+                <GenrePill key={g.id} id={g.id} value={g.value} />
               ))}
             </div>
           </div>
