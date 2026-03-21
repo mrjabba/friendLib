@@ -1,24 +1,24 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import { books } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import Link from 'next/link';
-import Button from '@/components/Button';
-import Image from 'next/image';
+import { drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
+import { books } from '@/db/schema'
+import { eq } from 'drizzle-orm'
+import Link from 'next/link'
+import Button from '@/components/Button'
+import Image from 'next/image'
 
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
-const db = drizzle(client);
+const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
+const db = drizzle(client)
 
 interface PageProps {
-  searchParams: Promise<{ id?: string }>;
+  searchParams: Promise<{ id?: string }>
 }
 
 export default async function BookDetailPage({ searchParams }: PageProps) {
-  const params = await searchParams;
-  const id = parseInt(params.id || '0', 10);
-  
-  const result = await db.select().from(books).where(eq(books.id, id)).limit(1);
-  
+  const params = await searchParams
+  const id = parseInt(params.id || '0', 10)
+
+  const result = await db.select().from(books).where(eq(books.id, id)).limit(1)
+
   if (result.length === 0) {
     return (
       <div>
@@ -27,55 +27,47 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
           Add a new book
         </Link>
       </div>
-    );
+    )
   }
-  
-  const book = result[0];
 
-  const isbnFormatted = book.isbn13.toString().replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5');
-  const genres = book.genres ? book.genres.split(',').map(g => g.trim()) : [];
+  const book = result[0]
+
+  const isbnFormatted = book.isbn13
+    .toString()
+    .replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')
+  const genres = book.genres ? book.genres.split(',').map((g) => g.trim()) : []
 
   return (
     <div>
-
-<div className="flex gap-4">
-        <Image
-          src="/images/book-empty-small.png"
-          alt='logo-small'
-          width={200}
-          height={200}
-        />
-        <div className="book-details">
-
-        </div>
+      <div className="flex gap-4">
+        <Image src="/images/book-empty-small.png" alt="logo-small" width={200} height={200} />
+        <div className="book-details"></div>
 
         <div>
-              <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
-              <p className="text-gray-600 mb-6">{book.author}</p>
+          <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
+          <p className="text-gray-600 mb-6">{book.author}</p>
 
-              <div className="bg-white shadow rounded-lg p-6 mb-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">ISBN:</span>
-                    <span className="text-sm">{isbnFormatted}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-500">Pages:</span>
-                    <span className="text-sm">{book.pages}</span>
-                  </div>
-                </div>
+          <div className="bg-white shadow rounded-lg p-6 mb-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">ISBN:</span>
+                <span className="text-sm">{isbnFormatted}</span>
               </div>
-        </div>  
-</div>
-
-      
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Pages:</span>
+                <span className="text-sm">{book.pages}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div>
         {genres.length > 0 && (
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">Genres</h3>
             <div className="flex flex-wrap gap-2">
               {genres.map((genre, index) => (
-                <span 
+                <span
                   key={index}
                   className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm hover:bg-slate-200 transition cursor-default"
                 >
@@ -85,7 +77,6 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
             </div>
           </div>
         )}
-        
         <div className="flex gap-4">
           <Link href="/actions/book-add">
             <Button>Add Another Book</Button>
@@ -96,5 +87,5 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
