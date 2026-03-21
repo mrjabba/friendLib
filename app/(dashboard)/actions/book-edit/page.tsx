@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getBookById, updateBook } from './actions';
 import { SubmitButton } from './SubmitButton';
 
@@ -93,7 +94,12 @@ export default async function BookEditPage({ searchParams }: PageProps) {
           </div>
         </fieldset>
       
+      <div className="flex gap-4">
         <SubmitButton />
+        <Link href="/" className="bg-slate-800 text-stone-100 px-4 py-2 rounded hover:bg-slate-700 transition">
+          Cancel
+        </Link>
+      </div>
       </form>
     </>
   );
