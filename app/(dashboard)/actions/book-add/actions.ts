@@ -5,6 +5,7 @@ import postgres from 'postgres'
 import { books, genre, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
+import { auth } from '@clerk/nextjs/server'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
@@ -19,6 +20,12 @@ export async function getBookGenres(bookId: number) {
 }
 
 export async function addBook(formData: FormData) {
+  const { userId } = await auth()
+
+  if (!userId) {
+    redirect('/sign-in')
+  }
+
   const title = formData.get('title') as string
   const author = formData.get('author') as string
   const pages = parseInt(formData.get('pages') as string, 10)
@@ -36,6 +43,7 @@ export async function addBook(formData: FormData) {
       author,
       pages,
       isbn13,
+      userId,
     })
     .returning({ id: books.id })
 

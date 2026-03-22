@@ -1,6 +1,7 @@
 'use client'
 
 import { updateBook } from './actions'
+import { deleteBook } from '../delete-actions'
 import { SubmitButton } from './SubmitButton'
 import Button from '@/components/Button'
 import DeleteButton from '@/components/DeleteButton'
@@ -110,7 +111,7 @@ export default function BookEditForm({ book, genres }: BookEditFormProps) {
         <Link href="/">
           <Button>Cancel</Button>
         </Link>
-        <DeleteButton id={book.id} />
+        <DeleteButton id={book.id} deleteAction={deleteBook} />
       </div>
     </form>
   )

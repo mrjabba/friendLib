@@ -1,15 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { deleteBook } from '@/app/(dashboard)/actions/book-edit/actions'
 
 interface DeleteButtonProps {
+  deleteAction: (id: number) => Promise<void>
   id: number
   label?: string
   variant?: 'primary' | 'danger'
 }
 
 export default function DeleteButton({
+  deleteAction,
   id,
   label = 'Delete',
   variant = 'danger',
@@ -23,7 +24,7 @@ export default function DeleteButton({
       return
     }
     setIsDeleting(true)
-    await deleteBook(id)
+    await deleteAction(id)
   }
 
   const baseClasses =

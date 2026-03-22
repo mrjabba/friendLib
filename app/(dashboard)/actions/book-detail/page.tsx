@@ -1,27 +1,55 @@
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
-import { books, genre, bookGenre } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useUser } from '@clerk/nextjs'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/Button'
-import Image from 'next/image'
 import GenrePill from '@/components/GenrePill'
 import DeleteButton from '@/components/DeleteButton'
+import { deleteBook } from '../delete-actions'
 
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
-const db = drizzle(client)
+export default function BookDetailPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { isSignedIn, isLoaded, user } = useUser()
+  const [book, setBook] = useState<any>(null)
+  const [genres, setGenres] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-interface PageProps {
-  searchParams: Promise<{ id?: string }>
-}
+  const id = searchParams.get('id')
 
-export default async function BookDetailPage({ searchParams }: PageProps) {
-  const params = await searchParams
-  const id = parseInt(params.id || '0', 10)
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in')
+    }
+  }, [isLoaded, isSignedIn, router])
 
-  const result = await db.select().from(books).where(eq(books.id, id)).limit(1)
+  useEffect(() => {
+    if (id && isSignedIn) {
+      fetch(`/api/books/${id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBook(data.book)
+          setGenres(data.genres || [])
+          setLoading(false)
+        })
+        .catch(() => {
+          setBook(null)
+          setLoading(false)
+        })
+    }
+  }, [id, isSignedIn])
 
-  if (result.length === 0) {
+  if (!isLoaded || loading) {
+    return <p>Loading...</p>
+  }
+
+  if (!isSignedIn) {
+    return null
+  }
+
+  if (!book) {
     return (
       <div>
         <h2 className="text-xl font-semibold mb-4">Book Not Found</h2>
@@ -32,24 +60,17 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
     )
   }
 
-  const book = result[0]
-
-  const genres = await db
-    .select({ id: genre.id, value: genre.value })
-    .from(bookGenre)
-    .innerJoin(genre, eq(bookGenre.genreId, genre.id))
-    .where(eq(bookGenre.bookId, id))
-
   const isbnFormatted = book.isbn13
     .toString()
     .replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')
 
+  const currentUserId = user?.id || null
+  const isOwner = currentUserId === String(book.userId)
+
   return (
     <div>
       <div className="flex gap-4">
-        <Image src="/images/book-empty-small.png" alt="logo-small" width={200} height={200} />
-        <div className="book-details"></div>
-
+        <img src="/images/book-empty-small.png" alt="logo-small" className="w-48 h-48" />
         <div>
           <h2 className="text-2xl font-bold mb-2">{book.title}</h2>
           <p className="text-gray-600 mb-6">{book.author}</p>
@@ -64,6 +85,10 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
                 <span className="text-sm text-gray-500">Pages:</span>
                 <span className="text-sm">{book.pages}</span>
               </div>
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-500">Owner:</span>
+                <span className="text-sm">{book.ownerEmail || 'Unknown'}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -73,7 +98,7 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-3">Genres</h3>
             <div className="flex flex-wrap gap-2">
-              {genres.map((g: { id: number; value: string }) => (
+              {genres.map((g: any) => (
                 <GenrePill key={g.id} id={g.id} value={g.value} />
               ))}
             </div>
@@ -83,10 +108,14 @@ export default async function BookDetailPage({ searchParams }: PageProps) {
           <Link href="/actions/book-add">
             <Button>Add Another Book</Button>
           </Link>
-          <Link href={`/actions/book-edit?id=${book.id}`}>
-            <Button>Edit</Button>
-          </Link>
-          <DeleteButton id={book.id} />
+          {isOwner && (
+            <>
+              <Link href={`/actions/book-edit?id=${book.id}`}>
+                <Button>Edit</Button>
+              </Link>
+              <DeleteButton id={book.id} deleteAction={deleteBook} />
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,69 +1,72 @@
-'use client';
+'use client'
 
-import { Book } from '@/app/models';
-import { useState, useEffect } from 'react';
-import BookDetail from '../book-detail/page';
-// import logo from '../assets/logo-small.png';
-// import {Book} from './models';
-// import BookDetail from './book-detail';
-//import BookDetail from './BookDetail';
+import { useState } from 'react'
+import Link from 'next/link'
 
-
-export default function BookList({ books }: { books: Book[] }) {
-
-const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined);
-//const [books, setBooks] = useState<Book[]>([]);
-console.log(`>> BookList start books`, books);
-let bookContent = <p>Please select a book.</p>;
-
-// useEffect(() => {
-//     async function fetchBooks() {
-//         console.log(`>> fetchBooks`);
-//         const response = await fetch('http://localhost:3000/books');
-//         const resData = await response.json();
-//         setBooks(resData.books);
-//     }
-//     // TODO error handler if we fail to fetch books
-//     fetchBooks();
-// }, []);
-
-function handleMouseOver(book: Book) {
-    // TODO reset the selected book state when the page initially loads?
-    //console.log(`>> handleMouseOver`, book);
-    setSelectedBook(book);
+export interface Book {
+  id: number
+  isbn13: string
+  title: string
+  author: string
+  pages: number
 }
 
-function handleMouseOut(book: Book | undefined) {
-    //console.log(`>> handleMouseOut`, book);
-    setSelectedBook(undefined);
-}
+// Reusable BookList component - import this from pages that need it
+export function BookListComponent({ books = [] }: { books: Book[] }) {
+  const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined)
+  console.log(`>> BookList start books`, books)
 
-return (
-      <div className="flex gap-8">
-        {/* Content on left */}
-        <div className="flex-1">
-          <h2 className="text-stone-700 text-2xl font-bold mb-4">Books</h2>
-          <ul className="text-slate-800 space-y-2">
+  function handleMouseOver(book: Book) {
+    setSelectedBook(book)
+  }
 
-            {
-                books && books.map((book) => {
-                    return <li key={book.isbn13} 
-                    onMouseOver={() => handleMouseOver(book)}
-                    onMouseOut={() => handleMouseOut(book)}
-                    >{book.title}</li>
-                })
-            }
+  function handleMouseOut() {
+    setSelectedBook(undefined)
+  }
 
-          </ul>
-        </div>
-        
-        {/* Image on right */}
-        <div className="flex-shrink-0">
-          {/* <img src={logo} className="h-64 w-auto object-contain" /> */}
-          {
-            selectedBook && <BookDetail book={selectedBook} />
-          }
-        </div>
+  return (
+    <div className="flex gap-8">
+      {/* Content on left */}
+      <div className="flex-1">
+        <h2 className="text-stone-700 text-2xl font-bold mb-4">Books</h2>
+        <ul className="text-slate-800 space-y-2">
+          {books.map((book) => {
+            return (
+              <li
+                key={book.isbn13}
+                onMouseOver={() => handleMouseOver(book)}
+                onMouseOut={() => handleMouseOut()}
+              >
+                {book.title}
+              </li>
+            )
+          })}
+        </ul>
       </div>
-    );
+
+      {/* Image on right */}
+      <div className="flex-shrink-0">
+        {selectedBook && (
+          <div className="border border-gray-300 rounded-md p-4">
+            <h3 className="font-semibold">{selectedBook.title}</h3>
+            <p className="text-gray-600">{selectedBook.author}</p>
+            <Link href={`/actions/book-detail?id=${selectedBook.id}`}>View Details</Link>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Page component - redirects to search since this is legacy
+export default function BookListPage() {
+  return (
+    <div>
+      <h2 className="text-stone-700 text-2xl font-bold mb-4">Books</h2>
+      <p className="text-gray-600 mb-4">Please use the search page to find books.</p>
+      <Link href="/actions/book-search" className="text-blue-600 hover:underline">
+        Go to Book Search
+      </Link>
+    </div>
+  )
 }

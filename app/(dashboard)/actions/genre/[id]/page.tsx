@@ -5,6 +5,8 @@ import postgres from 'postgres'
 import { books, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import Button from '@/components/Button'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
@@ -17,6 +19,11 @@ export default async function BooksByGenrePage({ params }: PageProps) {
   const { id } = await params
   const genreId = parseInt(id, 10)
   const genreInfo = await getGenreById(genreId)
+  const { userId } = await auth()
+
+  if (!userId) {
+    redirect('/sign-in')
+  }
 
   if (!genreInfo) {
     return (
@@ -36,10 +43,13 @@ export default async function BooksByGenrePage({ params }: PageProps) {
       author: books.author,
       pages: books.pages,
       isbn13: books.isbn13,
+      userId: books.userId,
     })
     .from(books)
     .innerJoin(bookGenre, eq(books.id, bookGenre.bookId))
     .where(eq(bookGenre.genreId, genreId))
+
+  const currentUserId = userId || null
 
   return (
     <div>
@@ -76,26 +86,31 @@ export default async function BooksByGenrePage({ params }: PageProps) {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {booksWithGenres.map((book) => (
-                <tr key={book.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap font-medium">{book.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{book.author}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{book.pages}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-mono text-sm">
-                    {book.isbn13
-                      .toString()
-                      .replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <Link href={`/actions/book-detail?id=${book.id}`}>
-                      <Button className="mr-2">View</Button>
-                    </Link>
-                    <Link href={`/actions/book-edit?id=${book.id}`}>
-                      <Button>Edit</Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {booksWithGenres.map((book) => {
+                const isOwner = currentUserId === book.userId
+                return (
+                  <tr key={book.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium">{book.title}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">{book.author}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">{book.pages}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-mono text-sm">
+                      {book.isbn13
+                        .toString()
+                        .replace(/(\d{3})(\d{1})(\d{4})(\d{4})(\d{1})/, '$1-$2-$3-$4-$5')}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <Link href={`/actions/book-detail?id=${book.id}`}>
+                        <Button className="mr-2">View</Button>
+                      </Link>
+                      {isOwner && (
+                        <Link href={`/actions/book-edit?id=${book.id}`}>
+                          <Button>Edit</Button>
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

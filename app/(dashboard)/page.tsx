@@ -1,8 +1,29 @@
-import { getGenrePopularity } from './actions/genre/actions'
-import Link from 'next/link'
+'use client'
 
-export default async function DashboardPage() {
-  const genres = await getGenrePopularity()
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useUser } from '@clerk/nextjs'
+
+export default function DashboardPage() {
+  const { isSignedIn, isLoaded, user } = useUser()
+  const [genres, setGenres] = useState<any[]>([])
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetch('/api/genres/popularity')
+        .then((res) => res.json())
+        .then((data) => setGenres(data))
+        .catch(() => setGenres([]))
+    }
+  }, [isSignedIn])
+
+  if (!isLoaded) {
+    return <p>Loading...</p>
+  }
+
+  if (!isSignedIn) {
+    return null
+  }
 
   return (
     <>
@@ -12,13 +33,18 @@ export default async function DashboardPage() {
           <h2 className="text-stone-700 text-lg mt-4">
             Search, borrow and loan books with friends.
           </h2>
+          {user?.emailAddresses[0]?.emailAddress && (
+            <p className="text-stone-500 text-sm mt-2">
+              Logged in as: {user.emailAddresses[0].emailAddress}
+            </p>
+          )}
         </div>
 
         <div className="flex-1 max-w-md">
           <h3 className="text-xl font-semibold mb-4">Genre Popularity</h3>
           {genres.length > 0 ? (
             <ul className="space-y-1">
-              {genres.map((g) => (
+              {genres.map((g: any) => (
                 <li key={g.id}>
                   <Link
                     href={`/actions/genre/${g.id}`}

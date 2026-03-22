@@ -1,16 +1,32 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { searchBooks } from './actions'
+import { deleteBook } from '../delete-actions'
 import Link from 'next/link'
 import Button from '@/components/Button'
 import DeleteButton from '@/components/DeleteButton'
+import { useUser } from '@clerk/nextjs'
 
 export default function BookSearch() {
+  const router = useRouter()
+  const { isSignedIn, isLoaded, user } = useUser()
   const [query, setQuery] = useState('')
   const [books, setBooks] = useState<any[]>([])
   const [searched, setSearched] = useState(false)
   const [isPending, startTransition] = useTransition()
+
+  if (!isLoaded) {
+    return <p>Loading...</p>
+  }
+
+  if (!isSignedIn) {
+    router.push('/sign-in')
+    return null
+  }
+
+  const currentUserId = user?.id || null
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -57,39 +73,44 @@ export default function BookSearch() {
             <p className="text-gray-500">No books found.</p>
           ) : (
             <ul className="space-y-4">
-              {books.map((book) => (
-                <li key={book.id} className="border border-gray-300 rounded-md p-4">
-                  <h4 className="font-semibold text-lg">
-                    <Link
-                      href={`/actions/book-detail?id=${book.id}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {book.title}
-                    </Link>
-                  </h4>
-                  <p className="text-gray-600">
-                    <strong>Author:</strong> {book.author}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>Pages:</strong> {book.pages}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>Genres:</strong> {book.genres}
-                  </p>
-                  <p className="text-gray-600">
-                    <strong>ISBN:</strong> {book.isbn13}
-                  </p>
-                  <div className="mt-2">
-                    <Link
-                      href={`/actions/book-edit?id=${book.id}`}
-                      className="text-blue-600 hover:underline mr-4"
-                    >
-                      Edit
-                    </Link>
-                    <DeleteButton id={book.id} variant="primary" />
-                  </div>
-                </li>
-              ))}
+              {books.map((book) => {
+                const isOwner = currentUserId === String(book.userId)
+                return (
+                  <li key={book.id} className="border border-gray-300 rounded-md p-4">
+                    <h4 className="font-semibold text-lg">
+                      <Link
+                        href={`/actions/book-detail?id=${book.id}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {book.title}
+                      </Link>
+                    </h4>
+                    <p className="text-gray-600">
+                      <strong>Author:</strong> {book.author}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Pages:</strong> {book.pages}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>ISBN:</strong> {book.isbn13}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Owner:</strong> {book.ownerEmail || 'Unknown'}
+                    </p>
+                    {isOwner && (
+                      <div className="mt-2">
+                        <Link
+                          href={`/actions/book-edit?id=${book.id}`}
+                          className="text-blue-600 hover:underline mr-4"
+                        >
+                          Edit
+                        </Link>
+                        <DeleteButton id={book.id} variant="primary" deleteAction={deleteBook} />
+                      </div>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           )}
         </div>

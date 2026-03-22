@@ -2,22 +2,23 @@
 import { pgTable, serial, text, integer, bigint, primaryKey, index } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
-// Keep existing books table (remove genres field)
+// Books table with user_id for ownership (Clerk userId is a string)
 export const books = pgTable('book', {
   id: serial('id').primaryKey(),
   title: text('title').notNull(),
   author: text('author').notNull(),
   pages: integer('pages').notNull(),
   isbn13: bigint('isbn13', { mode: 'number' }).notNull(),
+  userId: text('user_id').notNull(),
 })
 
-// NEW: Genre table
+// Genre table
 export const genre = pgTable('genre', {
   id: serial('id').primaryKey(),
   value: text('value').notNull().unique(),
 })
 
-// NEW: Book-Genre join table
+// Book-Genre join table
 export const bookGenre = pgTable(
   'book_genre',
   {

@@ -5,15 +5,10 @@ import postgres from 'postgres'
 import { books, genre, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
+import { auth } from '@clerk/nextjs/server'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
-
-export async function deleteBook(id: number) {
-  await db.delete(bookGenre).where(eq(bookGenre.bookId, id))
-  await db.delete(books).where(eq(books.id, id))
-  redirect('/')
-}
 
 export async function getBookById(id: number) {
   const result = await db.select().from(books).where(eq(books.id, id)).limit(1)
@@ -30,7 +25,24 @@ export async function getBookGenres(bookId: number) {
 }
 
 export async function updateBook(formData: FormData) {
+  const { userId } = await auth()
+
+  if (!userId) {
+    throw new Error('Unauthorized: You must be logged in to update a book')
+  }
+
   const id = parseInt(formData.get('id') as string, 10)
+
+  const result = await db
+    .select({ userId: books.userId })
+    .from(books)
+    .where(eq(books.id, id))
+    .limit(1)
+
+  if (!result[0] || result[0].userId !== userId) {
+    throw new Error('Forbidden: You can only edit your own books')
+  }
+
   const title = formData.get('title') as string
   const author = formData.get('author') as string
   const pages = parseInt(formData.get('pages') as string, 10)
@@ -50,4 +62,14 @@ export async function updateBook(formData: FormData) {
   }
 
   redirect(`/actions/book-detail?id=${id}`)
+}
+
+export async function getMyBooks() {
+  const { userId } = await auth()
+
+  if (!userId) {
+    return []
+  }
+
+  return await db.select().from(books).where(eq(books.userId, userId))
 }

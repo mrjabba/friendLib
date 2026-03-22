@@ -1,9 +1,12 @@
 'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import { addBook } from './actions'
 import { useFormStatus } from 'react-dom'
 import Button from '@/components/Button'
 import GenreAutocomplete from '@/components/GenreAutocomplete'
-import { useState } from 'react'
 
 interface Genre {
   id: number
@@ -20,7 +23,23 @@ function SubmitButton() {
 }
 
 export default function BookAddPage() {
+  const router = useRouter()
+  const { isSignedIn, isLoaded } = useUser()
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([])
+
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push('/sign-in')
+    }
+  }, [isLoaded, isSignedIn, router])
+
+  if (!isLoaded) {
+    return <p>Loading...</p>
+  }
+
+  if (!isSignedIn) {
+    return null
+  }
 
   return (
     <>

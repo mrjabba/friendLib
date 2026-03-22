@@ -8,6 +8,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.0.6",
     "@neondatabase/serverless": "^1.0.2",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
@@ -16,7 +17,6 @@
     "drizzle-orm": "^0.45.1",
     "geist": "^1.2.0",
     "next": "^16.1.6",
-    "next-auth": "5.0.0-beta.4",
     "postgres": "^3.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
