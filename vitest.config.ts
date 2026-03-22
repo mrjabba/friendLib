@@ -27,6 +27,7 @@ export default defineConfig({
     },
   },
 })
+// temporary - remove this
 module.exports = {
   coverage: {
     lines: 50,
@@ -34,4 +35,4 @@ module.exports = {
     functions: 50,
     statements: 50,
   },
-};
+}
