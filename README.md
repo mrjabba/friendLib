@@ -1,3 +1,5 @@
+**friendLib** is a personal library app for lending books to friends. Users can add and manage their book collection with details like title, author, pages, ISBN, and genres. Browse available books, request to borrow from other users, and manage incoming borrow requests with approve/reject functionality. Track your active borrows and return books once you're done — owners confirm the return to complete the cycle.
+
 # Next.js + PostgreSQL Auth Starter
 
 This is a [Next.js](https://nextjs.org/) starter kit that uses [NextAuth.js](https://next-auth.js.org/) for simple email + password login, [Drizzle](https://orm.drizzle.team) as the ORM, and a [Neon Postgres](https://vercel.com/postgres) database to persist the data.
