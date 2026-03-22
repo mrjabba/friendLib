@@ -35,3 +35,7 @@ yarn-error.log*
 # vercel
 .vercel
 .env*.local
+
+# clerk configuration (can include secrets)
+/.clerk/
+.clerk

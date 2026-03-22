@@ -1,30 +1,25 @@
-import './globals.css';
+import './globals.css'
 
-import { GeistSans } from 'geist/font/sans';
-
-let title = 'Next.js + Postgres Auth Starter';
-let description =
-  'This is a Next.js starter kit that uses NextAuth.js for simple email + password login and a Postgres database to persist the data.';
+import { ClerkProvider } from '@clerk/nextjs'
+import { GeistSans } from 'geist/font/sans'
 
 export const metadata = {
-  title,
-  description,
+  title: 'Friend Lib',
+  description: 'Search, borrow and loan books with friends.',
   twitter: {
     card: 'summary_large_image',
-    title,
-    description,
+    title: 'Friend Lib',
+    description: 'Search, borrow and loan books with friends.',
   },
-  metadataBase: new URL('https://nextjs-postgres-auth.vercel.app'),
-};
+  metadataBase: new URL('https://friendlib.app'),
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={GeistSans.variable}>{children}</body>
-    </html>
-  );
+    <ClerkProvider>
+      <html lang="en">
+        <body className={GeistSans.variable}>{children}</body>
+      </html>
+    </ClerkProvider>
+  )
 }
