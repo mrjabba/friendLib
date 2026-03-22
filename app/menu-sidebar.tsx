@@ -32,6 +32,27 @@ export default function MenuSidebar() {
             <Link href="/actions/book-search">Search</Link>
           </button>
         </li>
+        <li className="pt-4 border-t border-gray-300 mt-2">
+          <span className="text-sm text-gray-500">Borrowing</span>
+        </li>
+        <li>
+          <button className="py-2">
+            <Link href="/actions/my-borrows">My Borrows</Link>
+          </button>
+        </li>
+        <li className="pt-4 border-t border-gray-300 mt-2">
+          <span className="text-sm text-gray-500">Managing</span>
+        </li>
+        <li>
+          <button className="py-2">
+            <Link href="/actions/borrow-requests">Borrow Requests</Link>
+          </button>
+        </li>
+        <li>
+          <button className="py-2">
+            <Link href="/actions/return-confirmation">Returns</Link>
+          </button>
+        </li>
         <li className="pt-4">
           <UserButton />
         </li>

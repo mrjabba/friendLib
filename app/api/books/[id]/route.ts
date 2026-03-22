@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { books, genre, bookGenre } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { books, genre, bookGenre, borrows } from '@/db/schema'
+import { eq, and, isNull, isNotNull } from 'drizzle-orm'
 
 const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
 const db = drizzle(client)
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .limit(1)
 
     if (result.length === 0) {
-      return NextResponse.json({ book: null, genres: [] })
+      return NextResponse.json({ book: null, genres: [], borrowStatus: null })
     }
 
     const genres = await db
@@ -39,7 +39,38 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .innerJoin(genre, eq(bookGenre.genreId, genre.id))
       .where(eq(bookGenre.bookId, bookId))
 
-    return NextResponse.json({ book: result[0], genres })
+    const activeBorrow = await db
+      .select()
+      .from(borrows)
+      .where(
+        and(eq(borrows.bookId, bookId), isNotNull(borrows.approvedAt), isNull(borrows.returnedAt)),
+      )
+      .limit(1)
+
+    const pendingRequest = await db
+      .select()
+      .from(borrows)
+      .where(
+        and(eq(borrows.bookId, bookId), isNull(borrows.approvedAt), isNull(borrows.rejectedAt)),
+      )
+      .limit(1)
+
+    let borrowStatus: 'available' | 'borrowed' | 'pending' = 'available'
+    let activeBorrowData = null
+
+    if (activeBorrow.length > 0) {
+      borrowStatus = 'borrowed'
+      activeBorrowData = activeBorrow[0]
+    } else if (pendingRequest.length > 0) {
+      borrowStatus = 'pending'
+    }
+
+    return NextResponse.json({
+      book: result[0],
+      genres,
+      borrowStatus,
+      activeBorrow: activeBorrowData,
+    })
   } catch (error) {
     console.error('Failed to fetch book:', error)
     return NextResponse.json({ error: 'Failed to fetch book' }, { status: 500 })

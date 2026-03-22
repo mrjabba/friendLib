@@ -1,5 +1,15 @@
 // db/schema.ts
-import { pgTable, serial, text, integer, bigint, primaryKey, index } from 'drizzle-orm/pg-core'
+import {
+  pgTable,
+  serial,
+  text,
+  integer,
+  bigint,
+  primaryKey,
+  index,
+  uuid,
+  timestamp,
+} from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
 // Books table with user_id for ownership (Clerk userId is a string)
@@ -39,6 +49,7 @@ export const bookGenre = pgTable(
 // Relations
 export const booksRelations = relations(books, ({ many }) => ({
   genres: many(bookGenre),
+  borrows: many(borrows),
 }))
 
 export const genreRelations = relations(genre, ({ many }) => ({
@@ -53,5 +64,26 @@ export const bookGenreRelations = relations(bookGenre, ({ one }) => ({
   genre: one(genre, {
     fields: [bookGenre.genreId],
     references: [genre.id],
+  }),
+}))
+
+export const borrows = pgTable('borrow', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  bookId: integer('book_id')
+    .notNull()
+    .references(() => books.id, { onDelete: 'cascade' }),
+  ownerId: text('owner_id').notNull(),
+  borrowerId: text('borrower_id').notNull(),
+  requestedAt: timestamp('requested_at', { withTimezone: true }).notNull().defaultNow(),
+  approvedAt: timestamp('approved_at', { withTimezone: true }),
+  rejectedAt: timestamp('rejected_at', { withTimezone: true }),
+  returnedAt: timestamp('returned_at', { withTimezone: true }),
+  ownerConfirmedReturnAt: timestamp('owner_confirmed_return_at', { withTimezone: true }),
+})
+
+export const borrowsRelations = relations(borrows, ({ one }) => ({
+  book: one(books, {
+    fields: [borrows.bookId],
+    references: [books.id],
   }),
 }))

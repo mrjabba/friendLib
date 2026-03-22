@@ -4,8 +4,8 @@
  */
 
 import { db } from './index'
-import { books, genre, bookGenre } from './schema'
-import { eq, and, inArray } from 'drizzle-orm'
+import { books, genre, bookGenre, borrows } from './schema'
+import { eq, and, inArray, isNull, isNotNull } from 'drizzle-orm'
 
 // ============================================================================
 // BASIC GENRE OPERATIONS
@@ -275,4 +275,116 @@ export async function searchBooks(query: string) {
     ...book,
     genres: book.genres.map((bg) => bg.genre),
   }))
+}
+
+// ============================================================================
+// BORROW OPERATIONS
+// ============================================================================
+
+export type BorrowStatus = 'available' | 'borrowed' | 'pending' | 'returned'
+
+export async function createBorrowRequest(bookId: number, ownerId: string, borrowerId: string) {
+  const results = await db
+    .insert(borrows)
+    .values({
+      bookId,
+      ownerId,
+      borrowerId,
+    })
+    .returning()
+  return results[0]
+}
+
+export async function getBorrowsByBook(bookId: number) {
+  return db.select().from(borrows).where(eq(borrows.bookId, bookId))
+}
+
+export async function getActiveBorrowForBook(bookId: number) {
+  const results = await db
+    .select()
+    .from(borrows)
+    .where(
+      and(eq(borrows.bookId, bookId), isNotNull(borrows.approvedAt), isNull(borrows.returnedAt)),
+    )
+  return results[0] || null
+}
+
+export async function getPendingRequestForBook(bookId: number) {
+  const results = await db
+    .select()
+    .from(borrows)
+    .where(and(eq(borrows.bookId, bookId), isNull(borrows.approvedAt), isNull(borrows.rejectedAt)))
+  return results[0] || null
+}
+
+export async function getBorrowsByBorrower(borrowerId: string) {
+  return db.select().from(borrows).where(eq(borrows.borrowerId, borrowerId))
+}
+
+export async function getBorrowsByOwner(ownerId: string) {
+  return db.select().from(borrows).where(eq(borrows.ownerId, ownerId))
+}
+
+export async function getBorrowById(borrowId: string) {
+  const results = await db.select().from(borrows).where(eq(borrows.id, borrowId))
+  return results[0] || null
+}
+
+export async function approveBorrow(borrowId: string, ownerId: string) {
+  const results = await db
+    .update(borrows)
+    .set({ approvedAt: new Date() })
+    .where(and(eq(borrows.id, borrowId), eq(borrows.ownerId, ownerId)))
+    .returning()
+  return results[0] || null
+}
+
+export async function rejectBorrow(borrowId: string, ownerId: string) {
+  const results = await db
+    .update(borrows)
+    .set({ rejectedAt: new Date() })
+    .where(and(eq(borrows.id, borrowId), eq(borrows.ownerId, ownerId)))
+    .returning()
+  return results[0] || null
+}
+
+export async function markReturned(borrowId: string, borrowerId: string) {
+  const results = await db
+    .update(borrows)
+    .set({ returnedAt: new Date() })
+    .where(and(eq(borrows.id, borrowId), eq(borrows.borrowerId, borrowerId)))
+    .returning()
+  return results[0] || null
+}
+
+export async function confirmReturn(borrowId: string, ownerId: string) {
+  const results = await db
+    .update(borrows)
+    .set({ ownerConfirmedReturnAt: new Date() })
+    .where(and(eq(borrows.id, borrowId), eq(borrows.ownerId, ownerId)))
+    .returning()
+  return results[0] || null
+}
+
+export async function getPendingReturns(ownerId: string) {
+  return db
+    .select()
+    .from(borrows)
+    .where(
+      and(
+        eq(borrows.ownerId, ownerId),
+        isNotNull(borrows.returnedAt),
+        isNull(borrows.ownerConfirmedReturnAt),
+      ),
+    )
+}
+
+export async function getBookBorrowStatus(bookId: number): Promise<BorrowStatus> {
+  const activeBorrow = await getActiveBorrowForBook(bookId)
+  if (activeBorrow) return 'borrowed'
+
+  const pendingRequest = await getPendingRequestForBook(bookId)
+  if (pendingRequest) return 'pending'
+
+  return 'available'
 }
