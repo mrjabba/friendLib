@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { db } from '@/db'
 import { genre, bookGenre } from '@/db/schema'
 import { sql, eq } from 'drizzle-orm'
-
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
-const db = drizzle(client)
 
 export async function GET() {
   try {

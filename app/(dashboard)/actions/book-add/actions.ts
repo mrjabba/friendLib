@@ -1,14 +1,10 @@
 'use server'
 
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { db } from '@/db'
 import { books, genre, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { redirect } from 'next/navigation'
 import { auth } from '@clerk/nextjs/server'
-
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
-const db = drizzle(client)
 
 export async function getBookGenres(bookId: number) {
   const result = await db

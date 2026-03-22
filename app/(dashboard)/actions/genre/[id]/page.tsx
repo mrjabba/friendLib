@@ -1,15 +1,11 @@
 import Link from 'next/link'
 import { getGenreById } from '../actions'
-import { drizzle } from 'drizzle-orm/postgres-js'
-import postgres from 'postgres'
+import { db } from '@/db'
 import { books, bookGenre } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import Button from '@/components/Button'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-
-const client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`)
-const db = drizzle(client)
 
 interface PageProps {
   params: Promise<{ id: string }>
