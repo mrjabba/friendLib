@@ -27,3 +27,11 @@ export default defineConfig({
     },
   },
 })
+module.exports = {
+  coverage: {
+    lines: 50,
+    branches: 50,
+    functions: 50,
+    statements: 50,
+  },
+};
