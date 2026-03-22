@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -12,7 +12,7 @@ import ReturnButton from '@/components/ReturnButton'
 import { deleteBook } from '../delete-actions'
 import { requestBorrow, markBookReturned } from '../borrow/actions'
 
-export default function BookDetailPage() {
+function BookDetailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isSignedIn, isLoaded, user } = useUser()
@@ -169,5 +169,13 @@ export default function BookDetailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function BookDetailPage() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <BookDetailContent />
+    </Suspense>
   )
 }

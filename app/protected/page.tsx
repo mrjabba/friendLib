@@ -1,6 +1,4 @@
-'use client'
-
-import { useUser, SignOutButton } from '@clerk/nextjs'
+import { SignOutButton } from '@clerk/nextjs'
 import { getSession } from '@/app/lib/session'
 
 export default async function ProtectedPage() {

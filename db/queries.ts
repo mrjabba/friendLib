@@ -162,6 +162,7 @@ export async function createBookWithGenres(
     author: string
     pages: number
     isbn13: number
+    userId: string
   },
   genreIds: number[],
 ) {
