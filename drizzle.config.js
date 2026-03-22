@@ -5,6 +5,7 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    // Use POSTGRES_URL if defined (for GitHub Actions), else DATABASE_URL for local/dev/production
+    url: process.env.POSTGRES_URL || process.env.DATABASE_URL,
   },
 })
