@@ -39,3 +39,5 @@ yarn-error.log*
 # clerk configuration (can include secrets)
 /.clerk/
 .clerk
+
+test-results
