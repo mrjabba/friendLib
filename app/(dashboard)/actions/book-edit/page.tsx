@@ -2,12 +2,14 @@ import { getBookById, getBookGenres, updateBook } from './actions'
 import BookEditForm from './BookEditForm'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { getT } from '@/i18n/dictionaries'
 
 interface PageProps {
   searchParams: Promise<{ id?: string }>
 }
 
 export default async function BookEditPage({ searchParams }: PageProps) {
+  const { t } = await getT()
   const { userId } = await auth()
 
   if (!userId) {
@@ -22,15 +24,15 @@ export default async function BookEditPage({ searchParams }: PageProps) {
   if (!book) {
     return (
       <div>
-        <h2 className="text-xl font-semibold mb-4">Book Not Found</h2>
-        <p>Could not find the book you are looking for.</p>
+        <h2 className="text-xl font-semibold mb-4">{t('book.notFound')}</h2>
+        <p>{t('book.notFoundDetail')}</p>
       </div>
     )
   }
 
   return (
     <>
-      <h2 className="text-xl font-semibold mb-4">Edit Book</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('bookEdit.heading')}</h2>
 
       <BookEditForm book={book} genres={bookGenres} />
     </>

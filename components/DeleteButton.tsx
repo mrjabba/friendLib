@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useTranslations } from '@/i18n/I18nProvider'
+
 interface DeleteButtonProps {
   deleteAction: (id: number) => Promise<void>
   id: number
@@ -12,9 +14,10 @@ interface DeleteButtonProps {
 export default function DeleteButton({
   deleteAction,
   id,
-  label = 'Delete',
+  label,
   variant = 'danger',
 }: DeleteButtonProps) {
+  const t = useTranslations()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -35,19 +38,19 @@ export default function DeleteButton({
   if (showConfirm) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600">Are you sure?</span>
+        <span className="text-sm text-gray-600">{t('common.confirmDelete')}</span>
         <button
           onClick={handleDelete}
           disabled={isDeleting}
           className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
         >
-          {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+          {isDeleting ? t('common.deleting') : t('common.yesDelete')}
         </button>
         <button
           onClick={() => setShowConfirm(false)}
           className="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400"
         >
-          Cancel
+          {t('common.cancel')}
         </button>
       </div>
     )
@@ -55,7 +58,7 @@ export default function DeleteButton({
 
   return (
     <button onClick={handleDelete} className={baseClasses}>
-      {label}
+      {label ?? t('common.delete')}
     </button>
   )
 }

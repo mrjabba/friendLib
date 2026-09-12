@@ -17,20 +17,24 @@ export default defineConfig({
         'app/**/*.tsx',
         'components/**/*.ts',
         'components/**/*.tsx',
+        'i18n/**/*.ts',
+        'i18n/**/*.tsx',
         'lib/**/*.ts',
         'db/**/*.ts',
       ],
       thresholds: {
-        lines: 20,
-        branches: 20,
-        functions: 20,
-        statements: 20,
+        lines: 65,
+        branches: 80,
+        functions: 70,
+        statements: 65,
       },
     },
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, './'),
+      // Transitive Next.js dependency that Vitest cannot resolve; inert in tests.
+      'server-only': resolve(__dirname, './test/stubs/server-only.ts'),
     },
   },
 })

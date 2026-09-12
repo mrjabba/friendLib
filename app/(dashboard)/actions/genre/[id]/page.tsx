@@ -6,12 +6,14 @@ import { eq } from 'drizzle-orm'
 import Button from '@/components/Button'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { getT } from '@/i18n/dictionaries'
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
 export default async function BooksByGenrePage({ params }: PageProps) {
+  const { t } = await getT()
   const { id } = await params
   const genreId = parseInt(id, 10)
   const genreInfo = await getGenreById(genreId)
@@ -24,9 +26,9 @@ export default async function BooksByGenrePage({ params }: PageProps) {
   if (!genreInfo) {
     return (
       <div>
-        <h2 className="text-xl font-semibold mb-4">Genre Not Found</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('genre.notFound')}</h2>
         <Link href="/" className="text-blue-600 hover:underline">
-          Back to Dashboard
+          {t('common.backToDashboard')}
         </Link>
       </div>
     )
@@ -51,12 +53,10 @@ export default async function BooksByGenrePage({ params }: PageProps) {
     <div>
       <div className="mb-6">
         <Link href="/" className="text-blue-600 hover:underline text-sm mb-2 inline-block">
-          &larr; Back to Dashboard
+          &larr; {t('common.backToDashboard')}
         </Link>
-        <h2 className="text-2xl font-bold">Books in {genreInfo.value}</h2>
-        <p className="text-gray-600">
-          {booksWithGenres.length} {booksWithGenres.length === 1 ? 'book' : 'books'}
-        </p>
+        <h2 className="text-2xl font-bold">{t('genre.booksIn', { genre: genreInfo.value })}</h2>
+        <p className="text-gray-600">{t('book.count', { count: booksWithGenres.length })}</p>
       </div>
 
       {booksWithGenres.length > 0 ? (
@@ -65,19 +65,19 @@ export default async function BooksByGenrePage({ params }: PageProps) {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Title
+                  {t('book.title')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Author
+                  {t('book.author')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Pages
+                  {t('book.pages')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ISBN
+                  {t('book.isbn')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('common.actions')}
                 </th>
               </tr>
             </thead>
@@ -96,11 +96,11 @@ export default async function BooksByGenrePage({ params }: PageProps) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <Link href={`/actions/book-detail?id=${book.id}`}>
-                        <Button className="mr-2">View</Button>
+                        <Button className="mr-2">{t('common.view')}</Button>
                       </Link>
                       {isOwner && (
                         <Link href={`/actions/book-edit?id=${book.id}`}>
-                          <Button>Edit</Button>
+                          <Button>{t('common.edit')}</Button>
                         </Link>
                       )}
                     </td>
@@ -111,7 +111,7 @@ export default async function BooksByGenrePage({ params }: PageProps) {
           </table>
         </div>
       ) : (
-        <p className="text-gray-500">No books found in this genre.</p>
+        <p className="text-gray-500">{t('genre.noBooksIn')}</p>
       )}
     </div>
   )

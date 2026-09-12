@@ -3,22 +3,38 @@ import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { GeistSans } from 'geist/font/sans'
 
-export const metadata = {
-  title: 'Friend Lib',
-  description: 'Search, borrow and loan books with friends.',
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Friend Lib',
-    description: 'Search, borrow and loan books with friends.',
-  },
-  metadataBase: new URL('https://friendlib.app'),
+import { I18nProvider } from '@/i18n/I18nProvider'
+import { getTranslations } from '@/i18n/dictionaries'
+import { translate } from '@/i18n/config'
+
+export async function generateMetadata() {
+  const { locale, dict } = await getTranslations()
+  const title = translate(dict, locale, 'app.title')
+  const description = translate(dict, locale, 'app.tagline')
+
+  return {
+    title,
+    description,
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    metadataBase: new URL('https://friendlib.app'),
+  }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { locale, dict } = await getTranslations()
+
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={GeistSans.variable}>{children}</body>
+      <html lang={locale}>
+        <body className={GeistSans.variable}>
+          <I18nProvider locale={locale} dict={dict}>
+            {children}
+          </I18nProvider>
+        </body>
       </html>
     </ClerkProvider>
   )

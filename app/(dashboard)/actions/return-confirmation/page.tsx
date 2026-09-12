@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/Button'
 import { confirmBookReturn, getPendingReturnConfirmations } from '../borrow/actions'
+import { useI18n } from '@/i18n/I18nProvider'
 
 interface PendingReturn {
   id: string
@@ -15,6 +16,7 @@ interface PendingReturn {
 }
 
 export default function ReturnConfirmationPage() {
+  const { t, locale } = useI18n()
   const router = useRouter()
   const { isSignedIn, isLoaded } = useUser()
   const [returns, setReturns] = useState<PendingReturn[]>([])
@@ -44,7 +46,7 @@ export default function ReturnConfirmationPage() {
             titles[bookId] = json.book.title
           }
         } catch {
-          titles[bookId] = 'Unknown Book'
+          titles[bookId] = t('book.unknownBook')
         }
       }
       setBookTitles(titles)
@@ -62,7 +64,7 @@ export default function ReturnConfirmationPage() {
   }
 
   if (!isLoaded || loading) {
-    return <p>Loading...</p>
+    return <p>{t('common.loading')}</p>
   }
 
   if (!isSignedIn) {
@@ -71,10 +73,10 @@ export default function ReturnConfirmationPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Confirm Returns</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('returns.heading')}</h2>
 
       {returns.length === 0 ? (
-        <p className="text-gray-600">No returns pending confirmation.</p>
+        <p className="text-gray-600">{t('returns.empty')}</p>
       ) : (
         <div className="space-y-4">
           {returns.map((ret) => (
@@ -82,16 +84,19 @@ export default function ReturnConfirmationPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold text-lg">
-                    {bookTitles[ret.bookId] || `Book #${ret.bookId}`}
+                    {bookTitles[ret.bookId] || t('book.number', { id: ret.bookId })}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    Returned:{' '}
-                    {ret.returnedAt ? new Date(ret.returnedAt).toLocaleDateString() : 'Unknown'}
+                    {t('returns.returnedOn', {
+                      date: ret.returnedAt
+                        ? new Date(ret.returnedAt).toLocaleDateString(locale)
+                        : t('common.unknown'),
+                    })}
                   </p>
-                  <p className="text-sm text-blue-600 mt-1">Borrower marked this as returned</p>
+                  <p className="text-sm text-blue-600 mt-1">{t('returns.borrowerMarked')}</p>
                 </div>
                 <Button onClick={() => handleConfirm(ret.id)} disabled={processing === ret.id}>
-                  {processing === ret.id ? 'Confirming...' : 'Confirm Return'}
+                  {processing === ret.id ? t('returns.confirming') : t('returns.confirm')}
                 </Button>
               </div>
             </div>
@@ -101,7 +106,7 @@ export default function ReturnConfirmationPage() {
 
       <div className="mt-6">
         <Link href="/">
-          <Button>Back to Home</Button>
+          <Button>{t('common.backToHome')}</Button>
         </Link>
       </div>
     </div>

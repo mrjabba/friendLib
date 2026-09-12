@@ -10,6 +10,7 @@ import {
   rejectBorrowRequest,
   getIncomingBorrowRequests,
 } from '../borrow/actions'
+import { useI18n } from '@/i18n/I18nProvider'
 
 interface BorrowRequest {
   id: string
@@ -19,6 +20,7 @@ interface BorrowRequest {
 }
 
 export default function BorrowRequestsPage() {
+  const { t, locale } = useI18n()
   const router = useRouter()
   const { isSignedIn, isLoaded } = useUser()
   const [requests, setRequests] = useState<BorrowRequest[]>([])
@@ -48,7 +50,7 @@ export default function BorrowRequestsPage() {
             titles[bookId] = json.book.title
           }
         } catch {
-          titles[bookId] = 'Unknown Book'
+          titles[bookId] = t('book.unknownBook')
         }
       }
       setBookTitles(titles)
@@ -72,7 +74,7 @@ export default function BorrowRequestsPage() {
   }
 
   if (!isLoaded || loading) {
-    return <p>Loading...</p>
+    return <p>{t('common.loading')}</p>
   }
 
   if (!isSignedIn) {
@@ -81,10 +83,10 @@ export default function BorrowRequestsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Borrow Requests</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('requests.heading')}</h2>
 
       {requests.length === 0 ? (
-        <p className="text-gray-600">No pending borrow requests.</p>
+        <p className="text-gray-600">{t('requests.empty')}</p>
       ) : (
         <div className="space-y-4">
           {requests.map((request) => (
@@ -92,13 +94,14 @@ export default function BorrowRequestsPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h3 className="font-semibold text-lg">
-                    {bookTitles[request.bookId] || `Book #${request.bookId}`}
+                    {bookTitles[request.bookId] || t('book.number', { id: request.bookId })}
                   </h3>
                   <p className="text-sm text-gray-500">
-                    Requested:{' '}
-                    {request.requestedAt
-                      ? new Date(request.requestedAt).toLocaleDateString()
-                      : 'Unknown'}
+                    {t('borrows.requested', {
+                      date: request.requestedAt
+                        ? new Date(request.requestedAt).toLocaleDateString(locale)
+                        : t('common.unknown'),
+                    })}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -106,14 +109,14 @@ export default function BorrowRequestsPage() {
                     onClick={() => handleApprove(request.id)}
                     disabled={processing === request.id}
                   >
-                    Approve
+                    {t('requests.approve')}
                   </Button>
                   <button
                     onClick={() => handleReject(request.id)}
                     disabled={processing === request.id}
                     className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
                   >
-                    Reject
+                    {t('requests.reject')}
                   </button>
                 </div>
               </div>
@@ -124,7 +127,7 @@ export default function BorrowRequestsPage() {
 
       <div className="mt-6">
         <Link href="/">
-          <Button>Back to Home</Button>
+          <Button>{t('common.backToHome')}</Button>
         </Link>
       </div>
     </div>

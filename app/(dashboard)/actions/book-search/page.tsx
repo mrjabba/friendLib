@@ -8,8 +8,10 @@ import Link from 'next/link'
 import Button from '@/components/Button'
 import DeleteButton from '@/components/DeleteButton'
 import { useUser } from '@clerk/nextjs'
+import { useTranslations } from '@/i18n/I18nProvider'
 
 export default function BookSearch() {
+  const t = useTranslations()
   const router = useRouter()
   const { isSignedIn, isLoaded, user } = useUser()
   const [query, setQuery] = useState('')
@@ -18,7 +20,7 @@ export default function BookSearch() {
   const [isPending, startTransition] = useTransition()
 
   if (!isLoaded) {
-    return <p>Loading...</p>
+    return <p>{t('common.loading')}</p>
   }
 
   if (!isSignedIn) {
@@ -39,15 +41,15 @@ export default function BookSearch() {
 
   return (
     <>
-      <h2 className="text-xl font-semibold mb-4">Book Search</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('search.heading')}</h2>
 
       <form onSubmit={handleSearch} className="mb-6">
         <fieldset className="border border-gray-300 rounded-md p-4 mb-4">
-          <legend className="font-medium px-1">Details</legend>
+          <legend className="font-medium px-1">{t('search.details')}</legend>
 
           <div className="flex flex-col gap-1 mb-4 md:flex-row md:items-center">
             <label htmlFor="search" className="md:w-40 font-medium">
-              Search
+              {t('search.label')}
             </label>
             <input
               type="text"
@@ -62,15 +64,17 @@ export default function BookSearch() {
         </fieldset>
 
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Searching...' : 'Search'}
+          {isPending ? t('search.searching') : t('search.submit')}
         </Button>
       </form>
 
       {searched && (
         <div className="mt-6">
-          <h3 className="text-lg font-medium mb-3">Results ({books.length})</h3>
+          <h3 className="text-lg font-medium mb-3">
+            {t('search.results', { count: books.length })}
+          </h3>
           {books.length === 0 ? (
-            <p className="text-gray-500">No books found.</p>
+            <p className="text-gray-500">{t('search.noBooks')}</p>
           ) : (
             <ul className="space-y-4">
               {books.map((book) => {
@@ -86,16 +90,16 @@ export default function BookSearch() {
                       </Link>
                     </h4>
                     <p className="text-gray-600">
-                      <strong>Author:</strong> {book.author}
+                      <strong>{t('book.author')}:</strong> {book.author}
                     </p>
                     <p className="text-gray-600">
-                      <strong>Pages:</strong> {book.pages}
+                      <strong>{t('book.pages')}:</strong> {book.pages}
                     </p>
                     <p className="text-gray-600">
-                      <strong>ISBN:</strong> {book.isbn13}
+                      <strong>{t('book.isbn')}:</strong> {book.isbn13}
                     </p>
                     <p className="text-gray-600">
-                      <strong>Owner:</strong> {book.ownerEmail || 'Unknown'}
+                      <strong>{t('book.owner')}:</strong> {book.ownerEmail || t('common.unknown')}
                     </p>
                     {isOwner && (
                       <div className="mt-2">
@@ -103,7 +107,7 @@ export default function BookSearch() {
                           href={`/actions/book-edit?id=${book.id}`}
                           className="text-blue-600 hover:underline mr-4"
                         >
-                          Edit
+                          {t('common.edit')}
                         </Link>
                         <DeleteButton id={book.id} variant="primary" deleteAction={deleteBook} />
                       </div>

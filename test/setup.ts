@@ -6,6 +6,7 @@ vi.mock('next/navigation', () => ({
     push: vi.fn(),
     replace: vi.fn(),
     prefetch: vi.fn(),
+    refresh: vi.fn(),
     back: vi.fn(),
     forward: vi.fn(),
   }),
@@ -39,3 +40,13 @@ vi.mock('@clerk/nextjs', () => ({
 global.fetch = vi.fn()
 
 global.window = global.window || ({} as any)
+
+// `useFormStatus` ships with the React version Next.js bundles, but not with the
+// standalone react-dom that Vitest resolves. Provide an idle status by default.
+vi.mock('react-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-dom')>()
+  return {
+    ...actual,
+    useFormStatus: () => ({ pending: false, data: null, method: null, action: null }),
+  }
+})

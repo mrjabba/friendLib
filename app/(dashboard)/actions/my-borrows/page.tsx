@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Button from '@/components/Button'
 import ReturnButton from '@/components/ReturnButton'
 import { getMyBorrows, markBookReturned } from '../borrow/actions'
+import { useI18n } from '@/i18n/I18nProvider'
 
 interface MyBorrow {
   id: string
@@ -20,6 +21,7 @@ interface MyBorrow {
 }
 
 export default function MyBorrowsPage() {
+  const { t, locale } = useI18n()
   const router = useRouter()
   const { isSignedIn, isLoaded } = useUser()
   const [borrows, setBorrows] = useState<MyBorrow[]>([])
@@ -48,7 +50,7 @@ export default function MyBorrowsPage() {
             titles[bookId] = json.book.title
           }
         } catch {
-          titles[bookId] = 'Unknown Book'
+          titles[bookId] = t('book.unknownBook')
         }
       }
       setBookTitles(titles)
@@ -61,16 +63,16 @@ export default function MyBorrowsPage() {
 
   const getStatus = (borrow: MyBorrow) => {
     if (borrow.ownerConfirmedReturnAt)
-      return { label: 'Returned & Confirmed', color: 'text-green-600' }
+      return { label: t('borrows.status.returnedConfirmed'), color: 'text-green-600' }
     if (borrow.returnedAt)
-      return { label: 'Returned - Pending Confirmation', color: 'text-blue-600' }
-    if (borrow.rejectedAt) return { label: 'Request Rejected', color: 'text-red-600' }
-    if (borrow.approvedAt) return { label: 'Approved - Borrowed', color: 'text-green-600' }
-    return { label: 'Pending Approval', color: 'text-yellow-600' }
+      return { label: t('borrows.status.returnedPending'), color: 'text-blue-600' }
+    if (borrow.rejectedAt) return { label: t('borrows.status.rejected'), color: 'text-red-600' }
+    if (borrow.approvedAt) return { label: t('borrows.status.approved'), color: 'text-green-600' }
+    return { label: t('borrows.status.pendingApproval'), color: 'text-yellow-600' }
   }
 
   if (!isLoaded || loading) {
-    return <p>Loading...</p>
+    return <p>{t('common.loading')}</p>
   }
 
   if (!isSignedIn) {
@@ -79,10 +81,10 @@ export default function MyBorrowsPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">My Borrows</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('borrows.heading')}</h2>
 
       {borrows.length === 0 ? (
-        <p className="text-gray-600">You haven&apos;t borrowed any books yet.</p>
+        <p className="text-gray-600">{t('borrows.empty')}</p>
       ) : (
         <div className="space-y-4">
           {borrows.map((borrow) => {
@@ -94,14 +96,15 @@ export default function MyBorrowsPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {bookTitles[borrow.bookId] || `Book #${borrow.bookId}`}
+                      {bookTitles[borrow.bookId] || t('book.number', { id: borrow.bookId })}
                     </h3>
                     <p className={`text-sm ${status.color}`}>{status.label}</p>
                     <p className="text-sm text-gray-500 mt-2">
-                      Requested:{' '}
-                      {borrow.requestedAt
-                        ? new Date(borrow.requestedAt).toLocaleDateString()
-                        : 'Unknown'}
+                      {t('borrows.requested', {
+                        date: borrow.requestedAt
+                          ? new Date(borrow.requestedAt).toLocaleDateString(locale)
+                          : t('common.unknown'),
+                      })}
                     </p>
                   </div>
                   {canReturn && <ReturnButton onReturn={markBookReturned} borrowId={borrow.id} />}
@@ -114,7 +117,7 @@ export default function MyBorrowsPage() {
 
       <div className="mt-6">
         <Link href="/">
-          <Button>Back to Home</Button>
+          <Button>{t('common.backToHome')}</Button>
         </Link>
       </div>
     </div>
