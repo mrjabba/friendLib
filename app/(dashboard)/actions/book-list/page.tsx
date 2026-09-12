@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 
+import { useTranslations } from '@/i18n/I18nProvider'
+
 export interface Book {
   id: number
   isbn13: string
@@ -13,6 +15,7 @@ export interface Book {
 
 // Reusable BookList component - import this from pages that need it
 export function BookListComponent({ books = [] }: { books: Book[] }) {
+  const t = useTranslations()
   const [selectedBook, setSelectedBook] = useState<Book | undefined>(undefined)
   console.log(`>> BookList start books`, books)
 
@@ -28,7 +31,7 @@ export function BookListComponent({ books = [] }: { books: Book[] }) {
     <div className="flex gap-8">
       {/* Content on left */}
       <div className="flex-1">
-        <h2 className="text-stone-700 text-2xl font-bold mb-4">Books</h2>
+        <h2 className="text-stone-700 text-2xl font-bold mb-4">{t('bookList.heading')}</h2>
         <ul className="text-slate-800 space-y-2">
           {books.map((book) => {
             return (
@@ -50,7 +53,9 @@ export function BookListComponent({ books = [] }: { books: Book[] }) {
           <div className="border border-gray-300 rounded-md p-4">
             <h3 className="font-semibold">{selectedBook.title}</h3>
             <p className="text-gray-600">{selectedBook.author}</p>
-            <Link href={`/actions/book-detail?id=${selectedBook.id}`}>View Details</Link>
+            <Link href={`/actions/book-detail?id=${selectedBook.id}`}>
+              {t('bookList.viewDetails')}
+            </Link>
           </div>
         )}
       </div>
@@ -60,12 +65,14 @@ export function BookListComponent({ books = [] }: { books: Book[] }) {
 
 // Page component - redirects to search since this is legacy
 export default function BookListPage() {
+  const t = useTranslations()
+
   return (
     <div>
-      <h2 className="text-stone-700 text-2xl font-bold mb-4">Books</h2>
-      <p className="text-gray-600 mb-4">Please use the search page to find books.</p>
+      <h2 className="text-stone-700 text-2xl font-bold mb-4">{t('bookList.heading')}</h2>
+      <p className="text-gray-600 mb-4">{t('bookList.useSearch')}</p>
       <Link href="/actions/book-search" className="text-blue-600 hover:underline">
-        Go to Book Search
+        {t('bookList.goToSearch')}
       </Link>
     </div>
   )

@@ -11,8 +11,10 @@ import BorrowButton from '@/components/BorrowButton'
 import ReturnButton from '@/components/ReturnButton'
 import { deleteBook } from '../delete-actions'
 import { requestBorrow, markBookReturned } from '../borrow/actions'
+import { useTranslations } from '@/i18n/I18nProvider'
 
 function BookDetailContent() {
+  const t = useTranslations()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isSignedIn, isLoaded, user } = useUser()
@@ -51,7 +53,7 @@ function BookDetailContent() {
   }, [id, isSignedIn])
 
   if (!isLoaded || loading) {
-    return <p>Loading...</p>
+    return <p>{t('common.loading')}</p>
   }
 
   if (!isSignedIn) {
@@ -61,9 +63,9 @@ function BookDetailContent() {
   if (!book) {
     return (
       <div>
-        <h2 className="text-xl font-semibold mb-4">Book Not Found</h2>
+        <h2 className="text-xl font-semibold mb-4">{t('book.notFound')}</h2>
         <Link href="/actions/book-add" className="text-blue-600 hover:underline">
-          Add a new book
+          {t('book.addNew')}
         </Link>
       </div>
     )
@@ -80,12 +82,12 @@ function BookDetailContent() {
   const getStatusMessage = () => {
     if (borrowStatus === 'borrowed' && activeBorrow) {
       if (isBorrower) {
-        return { type: 'borrowed-by-you', message: 'You are currently borrowing this book' }
+        return { type: 'borrowed-by-you', message: t('borrow.borrowedByYou') }
       }
-      return { type: 'borrowed', message: 'This book is currently borrowed' }
+      return { type: 'borrowed', message: t('borrow.borrowed') }
     }
     if (borrowStatus === 'pending') {
-      return { type: 'pending', message: 'There is a pending borrow request for this book' }
+      return { type: 'pending', message: t('borrow.pending') }
     }
     return null
   }
@@ -106,20 +108,20 @@ function BookDetailContent() {
           <div className="bg-white shadow rounded-lg p-6 mb-6">
             <div className="space-y-4">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-500">ISBN:</span>
+                <span className="text-sm text-gray-500">{t('book.isbn')}:</span>
                 <span className="text-sm">{isbnFormatted}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-500">Pages:</span>
+                <span className="text-sm text-gray-500">{t('book.pages')}:</span>
                 <span className="text-sm">{book.pages}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-500">Owner:</span>
-                <span className="text-sm">{book.ownerEmail || 'Unknown'}</span>
+                <span className="text-sm text-gray-500">{t('book.owner')}:</span>
+                <span className="text-sm">{book.ownerEmail || t('common.unknown')}</span>
               </div>
               {statusInfo && (
                 <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-500">Status:</span>
+                  <span className="text-sm text-gray-500">{t('book.status')}:</span>
                   <span
                     className={`text-sm ${
                       statusInfo.type === 'borrowed-by-you'
@@ -138,7 +140,7 @@ function BookDetailContent() {
       <div>
         {genres.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-3">Genres</h3>
+            <h3 className="text-lg font-semibold mb-3">{t('book.genres')}</h3>
             <div className="flex flex-wrap gap-2">
               {genres.map((g: any) => (
                 <GenrePill key={g.id} id={g.id} value={g.value} />
@@ -156,12 +158,12 @@ function BookDetailContent() {
 
         <div className="flex gap-4">
           <Link href="/actions/book-add">
-            <Button>Add Another Book</Button>
+            <Button>{t('book.addAnother')}</Button>
           </Link>
           {isOwner && (
             <>
               <Link href={`/actions/book-edit?id=${book.id}`}>
-                <Button>Edit</Button>
+                <Button>{t('common.edit')}</Button>
               </Link>
               <DeleteButton id={book.id} deleteAction={deleteBook} />
             </>
@@ -173,8 +175,10 @@ function BookDetailContent() {
 }
 
 export default function BookDetailPage() {
+  const t = useTranslations()
+
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<p>{t('common.loading')}</p>}>
       <BookDetailContent />
     </Suspense>
   )

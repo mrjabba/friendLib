@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import GenrePill from './GenrePill'
+import { useTranslations } from '@/i18n/I18nProvider'
 
 interface Genre {
   id: number
@@ -14,6 +15,7 @@ interface GenreAutocompleteProps {
 }
 
 export default function GenreAutocomplete({ selectedGenres, onChange }: GenreAutocompleteProps) {
+  const t = useTranslations()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Genre[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -104,7 +106,7 @@ export default function GenreAutocomplete({ selectedGenres, onChange }: GenreAut
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => query.length >= 2 && setIsOpen(true)}
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-          placeholder="Type to search or create genres..."
+          placeholder={t('genre.searchPlaceholder')}
           className="w-full border border-gray-300 rounded px-3 py-2"
           autoComplete="off"
         />
@@ -112,7 +114,7 @@ export default function GenreAutocomplete({ selectedGenres, onChange }: GenreAut
         {isOpen && (
           <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             {isLoading ? (
-              <li className="px-3 py-2 text-gray-500">Searching...</li>
+              <li className="px-3 py-2 text-gray-500">{t('genre.searching')}</li>
             ) : results.length > 0 ? (
               results.map((genre) => (
                 <li key={genre.id}>
@@ -134,13 +136,13 @@ export default function GenreAutocomplete({ selectedGenres, onChange }: GenreAut
                   onClick={handleCreateNew}
                   className="w-full text-left px-3 py-2 text-blue-600 hover:bg-blue-50 transition"
                 >
-                  + Create &quot;{query}&quot;
+                  {t('genre.create', { query })}
                 </button>
               </li>
             )}
 
             {!isLoading && results.length === 0 && !showCreateOption && (
-              <li className="px-3 py-2 text-gray-500">No matching genres</li>
+              <li className="px-3 py-2 text-gray-500">{t('genre.noMatches')}</li>
             )}
           </ul>
         )}
